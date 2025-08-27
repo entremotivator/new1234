@@ -12,7 +12,6 @@ from utils.rentcast_api import fetch_property_details
 from utils.database import get_user_usage
 from streamlit.components.v1 import html
 from supabase import create_client
-import os
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -21,10 +20,15 @@ logger = logging.getLogger(__name__)
 st.set_page_config(page_title="Property Search", page_icon="🏠", layout="wide")
 
 # =====================================================
-# 1. Supabase Client
+# 1. Supabase Client (using Streamlit secrets)
 # =====================================================
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+SUPABASE_URL = st.secrets["supabase"]["url"]
+SUPABASE_KEY = st.secrets["supabase"]["key"]
+
+if not SUPABASE_URL or not SUPABASE_KEY:
+    st.error("Supabase URL or Key not found in Streamlit secrets.toml")
+    st.stop()
+
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # =====================================================
