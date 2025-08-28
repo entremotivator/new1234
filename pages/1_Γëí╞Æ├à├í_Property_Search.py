@@ -1,4 +1,4 @@
-# =====================================================
+## =====================================================
 # pages/1_🏠_Property_Search.py
 # =====================================================
 
@@ -84,7 +84,8 @@ def get_user_property_searches(user_id: str, limit: int = 50) -> List[Dict]:
         logger.error(f"Error fetching property searches: {e}")
         return []
 
-def save_property_search(user_id: str, property_data: Dict[Any, Any]) -> bool:
+def delete_property_search(search_id: int, user_id: str) -> bool:
+    """Delete a specific property search"""
     try:
         conn = get_db_connection()
         if not conn:
@@ -92,15 +93,15 @@ def save_property_search(user_id: str, property_data: Dict[Any, Any]) -> bool:
             
         with conn.cursor() as cur:
             cur.execute("""
-                INSERT INTO property_searches (user_id, property_data, search_date)
-                VALUES (%s, %s, %s)
-            """, (str(user_id), json.dumps(property_data), datetime.now()))
+                DELETE FROM property_searches 
+                WHERE id = %s AND user_id = %s
+            """, (search_id, user_id))
             conn.commit()
         
         conn.close()
         return True
     except Exception as e:
-        logger.error(f"Error saving property search: {e}")
+        logger.error(f"Error deleting property search: {e}")
         return False
 
 def get_search_statistics(user_id: str) -> Dict[str, Any]:
